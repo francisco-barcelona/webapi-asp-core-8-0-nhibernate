@@ -28,9 +28,15 @@ namespace MyApp.Controllers
         }
 
         [HttpGet("{id}")]
-        public Client Get(int id)
+        public ActionResult<Client> Get(int id)
         {
-            return _clientRepository.Get(id);
+            var client = _clientRepository.GetByIdWithEagerLoading(id, c => c.Sales);
+            if (client == null)
+            {
+                return NotFound();
+            }
+            var clientDto = _mapper.Map<ClientDto>(client);
+            return Ok(clientDto);
         }
 
         [HttpGet("{id:int}/sales")]

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyApp.Data.Entities
 {
-    public class Client
+    public class Client : IEntity
     {
         public virtual int Id { get; set; }
         public virtual string Name { get; set; }

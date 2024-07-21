@@ -1,4 +1,5 @@
-﻿using NHibernate;
+﻿using MyApp.Data.Entities;
+using NHibernate;
 using NHibernate.Linq;
 using System;
 using System.Collections.Generic;
@@ -9,13 +10,26 @@ using System.Threading.Tasks;
 
 namespace MyApp.Data.Repository
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T> : IRepository<T> where T : class, IEntity
     {
         private readonly ISessionFactory _sessionFactory;
 
         public Repository(ISessionFactory sessionFactory)
         {
             _sessionFactory = sessionFactory;
+        }
+
+        public T GetByIdWithEagerLoading(int id, params Expression<Func<T, object>>[] includeProperties)
+        {
+            using var session = _sessionFactory.OpenSession();
+            var query = session.Query<T>().Where(x => x.Id == id);
+
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Fetch(includeProperty);
+            }
+
+            return query.SingleOrDefault();
         }
 
         public T Get(int id)
