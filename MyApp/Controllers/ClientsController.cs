@@ -28,7 +28,7 @@ namespace MyApp.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Client> Get(int id)
+        public ActionResult<ClientDto> Get(int id)
         {
             var client = _clientRepository.GetByIdWithEagerLoading(id, c => c.Sales);
             if (client == null)
@@ -54,9 +54,22 @@ namespace MyApp.Controllers
             }
         }
 
+        //[HttpPost]
+        //public IActionResult Post([FromBody] Client client)
+        //{
+        //    _clientRepository.Add(client);
+        //    return Ok();
+        //}
+
         [HttpPost]
-        public IActionResult Post([FromBody] Client client)
+        public IActionResult Post([FromBody] ClientDto clientDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var client = _mapper.Map<Client>(clientDto);
             _clientRepository.Add(client);
             return Ok();
         }
